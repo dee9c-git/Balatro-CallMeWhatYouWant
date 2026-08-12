@@ -1,0 +1,9 @@
+{
+  "id": "CallMeWhatYouWant",
+  "name": "Call Me What You Want",
+  "author": ["Dee9c"],
+  "description": "Rename your jokers to something you want",
+  "prefix": "CallMeWhatYouWant",
+  "main_file": "main.lua",
+  "version": "0.1.0"
+}
