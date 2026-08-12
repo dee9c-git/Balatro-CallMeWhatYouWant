@@ -4,6 +4,19 @@ config.key = ""
 config.set_key = ""
 config.val = ""
 
+local info_node = {}
+
+
+local function info_func(nodes)
+    return {
+        n = G.UIT.ROOT,
+        config = { colour = G.C.BLACK, align = "cm", minw = 16, minh = 2, padding = 0.15 },
+        nodes = {
+            desc_from_rows(nodes, true)
+        }
+    }
+end
+
 local backup = {}
 
 for key, data in pairs(G.localization.descriptions.Joker) do
@@ -16,111 +29,145 @@ end
 function SMODS.current_mod.process_loc_text()
     for key, name in pairs(config.jokers) do
         G.localization.descriptions.Joker[key].name = name
-        sendInfoMessage("Key: " .. tostring(key) .. " | Name: " .. tostring(name), "CallMeWhatYouWant")
+        -- sendInfoMessage("Key: " .. tostring(key) .. " | Name: " .. tostring(name), "CallMeWhatYouWant")
     end
 end
 
-function G.FUNCS.set_joker_name()
+function G.FUNCS.set_joker_name(e)
+    local main_col = e.parent.parent.parent.parent
+    local text_ui_box = main_col.children[2].children[1]
+
     if config.jokers[config.set_key] == nil then
-        sendInfoMessage("No joker with that name!", "CallMeWhatYouWant")
+        localize { type = "descriptions", set = "CallMeText", key = "failed", vars = {},
+            nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
+        text_ui_box.config.object = UIBox({
+            definition = info_func(text_ui_box.config.object),
+            config = { parent = text_ui_box, type = "cm" },
+        })
+        text_ui_box.UIBox:recalculate()
         return
     end
     config.jokers[config.set_key] = config.val
-    sendInfoMessage("Woooo!", "CallMeWhatYouWant")
+
+    localize { type = "descriptions", set = "CallMeText", key = "success", vars = {},
+        nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
+    text_ui_box.config.object = UIBox({
+        definition = info_func(text_ui_box.config.object),
+        config = { parent = text_ui_box, type = "cm" },
+    })
+    text_ui_box.UIBox:recalculate()
 end
 
-function G.FUNCS.reset_joker_names()
+function G.FUNCS.reset_joker_names(e)
+    local main_col = e.parent.parent.parent.parent
+    local text_ui_box = main_col.children[2].children[1]
     for key, name in pairs(backup) do
         config.jokers[key] = name
     end
-end
 
-local test_count = 0
-
-function G.FUNCS.increase_test_count(e)
-    test_count = test_count + 1
-    sendInfoMessage(tostring(e), "CallMeWhatYouWant")
-end
-
-function G.FUNCS.press_test(e)
-    local menu_wrap = e.children[1].children[1].config
-    menu_wrap.text = "HOLY SHIT"
-    e.UIBox:recalculate()
-    for key, thing in pairs(menu_wrap) do
-        sendInfoMessage(tostring(key) .. " | " .. tostring(thing), "CallMeWhatYouWant")
-    end
-end
-
-function results_func(text)
-    return {
-        n = G.UIT.ROOT,
-        config = { align = "cm", minw = 8, minh = 2, padding = 0.15 },
-        nodes = {
-            { n = G.UIT.T, config = { align = "cm", text = text, scale = 0.5 } }
-        }
-    }
+    localize { type = "descriptions", set = "CallMeText", key = "reset_all", vars = {},
+        nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
+    text_ui_box.config.object = UIBox({
+        definition = info_func(text_ui_box.config.object),
+        config = { parent = text_ui_box, type = "cm" },
+    })
+    text_ui_box.UIBox:recalculate()
 end
 
 function G.FUNCS.search_joker(e)
     local main_col = e.parent.parent.parent.parent
     local text_ui_box = main_col.children[2].children[1]
-    --for key, thing in pairs(text_ui_box.config.object.definition.nodes[1].config) do
-    --    sendInfoMessage(tostring(key) .. " | " .. tostring(thing), "CallMeWhatYouWant")
-    --end
-    local count = 0
+    for key, thing in pairs(text_ui_box.config) do
+        sendInfoMessage(tostring(key) .. " | " .. tostring(thing), "CallMeWhatYouWant")
+    end
     local the_joker_names = {}
     local display_text = ""
     for joker_name, _ in pairs(config.jokers) do
         joker_name = tostring(joker_name)
         joker_name = string.sub(joker_name, 3):lower()
-        search_text = tostring(config.key):lower()
+        local search_text = tostring(config.key):lower()
         if search_text == "" then
             display_text = "Enter a joker to search for!"
         elseif search_text == joker_name then
             config.set_key = "j_" .. joker_name
-            display_text = "Found exact match: " .. joker_name .. ", Currently: " .. config.jokers[config.set_key]
-            break
+            text_ui_box.config.object:remove()
+            --text_ui_box = {}
+            localize { type = "descriptions", set = "CallMeText", key = "s_found_exact_match", vars = { joker_name, config.jokers[config.set_key] },
+                nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
+            text_ui_box.config.object = UIBox({
+                definition = info_func(text_ui_box.config.object),
+                config = { parent = text_ui_box, type = "cm" },
+            })
+            text_ui_box.UIBox:recalculate()
+            return
         elseif joker_name:find(search_text) then
-            the_joker_names.insert(joker_name)
+            table.insert(the_joker_names, joker_name)
         end
     end
-    if display_text == "" then
-        if #the_joker_names == 0 then
-            display_text = "No matches found!"
-        elseif #the_joker_names == 1 then
-            config.set_key = "j_" .. the_joker_names[1]
-            display_text = "Found match: " .. the_joker_names[1] .. ", Currently: " .. config.jokers[config.set_key]
-        else
-            display_text = "Found " .. tostring(#the_joker_names) .. " matches"
+    if #the_joker_names == 0 then
+        config.set_key = ""
+        text_ui_box.config.object:remove()
+        localize { type = "descriptions", set = "CallMeText", key = "s_found_no_match", vars = {},
+            nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
+        text_ui_box.config.object = UIBox({
+            definition = info_func(text_ui_box.config.object),
+            config = { parent = text_ui_box, type = "cm" },
+        })
+    elseif #the_joker_names == 1 then
+        config.set_key = "j_" .. the_joker_names[1]
+        text_ui_box.config.object:remove()
+        localize { type = "descriptions", set = "CallMeText", key = "s_found_one_match", vars = { config.set_key, config.jokers[config.set_key] },
+            nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
+        text_ui_box.config.object = UIBox({
+            definition = info_func(text_ui_box.config.object),
+            config = { parent = text_ui_box, type = "cm" },
+        })
+    else
+        config.set_key = ""
+        local names = table.concat(the_joker_names, ", ")
+        if #names > 50 then
+            names = names:sub(1, 50) .. "..."
         end
+
+        text_ui_box.config.object:remove()
+        localize { type = "descriptions", set = "CallMeText", key = "s_found_many", vars = { #the_joker_names, names },
+            nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
+        text_ui_box.config.object = UIBox({
+            definition = info_func(text_ui_box.config.object),
+            config = { parent = text_ui_box, type = "cm" },
+        })
     end
-
-    text_ui_box.config.object.definition.nodes[1].config.text = display_text
-
     text_ui_box.UIBox:recalculate()
 end
 
 SMODS.current_mod.config_tab = function()
+    localize { type = "descriptions", set = "CallMeText", key = "start", vars = {},
+        nodes = info_node, scale = 1.5, text_colour = G.C.WHITE }
+    local info = UIBox({
+        definition = info_func(info_node),
+        config = { type = "cm" },
+    })
+
+    local info_super_node = { n = G.UIT.O, config = { object = info } }
     return {
         n = G.UIT.ROOT,
-        config = { align = "cm", padding = 0.1, colour = G.C.BLACK, minw = 8, minh = 6 },
+        config = { align = "cm", padding = 0.1, colour = G.C.BLACK, minw = 16, minh = 6 },
         nodes =
         {
             {
                 n = G.UIT.C,
-                config = { align = "cm", minw = 8, minh = 6, padding = 0.15 },
+                config = { align = "cm", minw = 16, minh = 6, padding = 0.15 },
                 nodes = {
                     {
                         n = G.UIT.R,
-                        config = { align = "cm", minw = 8, minh = 2, padding = 0.15 },
+                        config = { align = "cm", minw = 16, minh = 2, padding = 0.15 },
                         nodes = {
                             create_text_input({
-                                colour = G.C.RED,
+                                colour = G.C.CHIPS,
                                 align = "cm",
                                 hooked_colour = darken(copy_table(G.C.CHIPS), 0.3),
-                                w = 2,
-                                h = 1,
-                                max_length = 100,
+                                w = 4,
+                                max_length = 32,
                                 extended_corpus = true,
                                 prompt_text = "Find a joker...",
                                 ref_table = config,
@@ -133,7 +180,7 @@ SMODS.current_mod.config_tab = function()
                                     UIBox_button({
                                         label = { "Search" },
                                         button = "search_joker",
-                                        colour = G.C.CHIPS
+                                        colour = G.C.RED
                                     }),
                                 }
                             },
@@ -141,23 +188,8 @@ SMODS.current_mod.config_tab = function()
                     },
                     {
                         n = G.UIT.R,
-                        config = { align = "cm", minw = 8, minh = 2, padding = 0.15 },
-                        nodes = {
-                            {
-                                n = G.UIT.O,
-                                config = {
-                                    align = "cm",
-                                    minw = 8,
-                                    minh = 2,
-                                    padding = 0.15,
-                                    object =
-                                        UIBox({
-                                            definition = results_func("Results be here..."),
-                                            config = { type = "cm" }
-                                        })
-                                },
-                            },
-                        }
+                        config = { align = "cm", minw = 16, minh = 2, padding = 0.15 },
+                        nodes = { info_super_node }
                     },
                     {
                         n = G.UIT.R,
@@ -167,14 +199,24 @@ SMODS.current_mod.config_tab = function()
                                 colour = G.C.CHIPS,
                                 align = "cm",
                                 hooked_colour = darken(copy_table(G.C.CHIPS), 0.3),
-                                w = 2,
-                                h = 1,
-                                max_length = 100,
+                                w = 4,
+                                max_length = 32,
                                 extended_corpus = true,
                                 prompt_text = "Name the joker...",
                                 ref_table = config,
                                 ref_value = "val",
                             }),
+                            {
+                                n = G.UIT.C,
+                                config = { align = "cm", minw = 2, minh = 2, padding = 0.15 },
+                                nodes = {
+                                    UIBox_button({
+                                        label = { "Change Name" },
+                                        button = "set_joker_name",
+                                        colour = G.C.RED
+                                    }),
+                                }
+                            }
                         }
                     },
                     {
@@ -192,17 +234,6 @@ SMODS.current_mod.config_tab = function()
                                     }),
                                 }
                             },
-                            {
-                                n = G.UIT.C,
-                                config = { align = "cm", minw = 2, minh = 2, padding = 0.15 },
-                                nodes = {
-                                    UIBox_button({
-                                        label = { "Change Name" },
-                                        button = "set_joker_name",
-                                        colour = G.C.RED
-                                    }),
-                                }
-                            }
                         }
                     },
                 },
