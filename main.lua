@@ -17,6 +17,22 @@ local function info_func(nodes)
     }
 end
 
+local function get_text_ui_box(e)
+    local main_col = e.parent.parent.parent.parent
+    return main_col.children[2].children[1]
+end
+
+local function show_info(text_ui_box, key, vars)
+    text_ui_box.config.object:remove()
+    localize { type = "descriptions", set = "CallMeText", key = key, vars = vars or {},
+        nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
+    text_ui_box.config.object = UIBox({
+        definition = info_func(text_ui_box.config.object),
+        config = { parent = text_ui_box, type = "cm" },
+    })
+    text_ui_box.UIBox:recalculate()
+end
+
 local backup = {}
 
 for key, data in pairs(G.localization.descriptions.Joker) do
@@ -34,71 +50,37 @@ function SMODS.current_mod.process_loc_text()
 end
 
 function G.FUNCS.set_joker_name(e)
-    local main_col = e.parent.parent.parent.parent
-    local text_ui_box = main_col.children[2].children[1]
+    local text_ui_box = get_text_ui_box(e)
 
     if config.jokers[config.set_key] == nil then
-        localize { type = "descriptions", set = "CallMeText", key = "failed", vars = {},
-            nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
-        text_ui_box.config.object = UIBox({
-            definition = info_func(text_ui_box.config.object),
-            config = { parent = text_ui_box, type = "cm" },
-        })
-        text_ui_box.UIBox:recalculate()
+        show_info(text_ui_box, "failed")
         return
     end
     config.jokers[config.set_key] = config.val
-
-    localize { type = "descriptions", set = "CallMeText", key = "success", vars = {},
-        nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
-    text_ui_box.config.object = UIBox({
-        definition = info_func(text_ui_box.config.object),
-        config = { parent = text_ui_box, type = "cm" },
-    })
-    text_ui_box.UIBox:recalculate()
+    show_info(text_ui_box, "success")
 end
 
 function G.FUNCS.reset_joker_names(e)
-    local main_col = e.parent.parent.parent.parent
-    local text_ui_box = main_col.children[2].children[1]
+    local text_ui_box = get_text_ui_box(e)
     for key, name in pairs(backup) do
         config.jokers[key] = name
     end
-
-    localize { type = "descriptions", set = "CallMeText", key = "reset_all", vars = {},
-        nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
-    text_ui_box.config.object = UIBox({
-        definition = info_func(text_ui_box.config.object),
-        config = { parent = text_ui_box, type = "cm" },
-    })
-    text_ui_box.UIBox:recalculate()
+    show_info(text_ui_box, "reset_all")
 end
 
 function G.FUNCS.search_joker(e)
-    local main_col = e.parent.parent.parent.parent
-    local text_ui_box = main_col.children[2].children[1]
-    for key, thing in pairs(text_ui_box.config) do
-        sendInfoMessage(tostring(key) .. " | " .. tostring(thing), "CallMeWhatYouWant")
-    end
+    local text_ui_box = get_text_ui_box(e)
     local the_joker_names = {}
-    local display_text = ""
+    local search_text = tostring(config.key):lower()
     for joker_name, _ in pairs(config.jokers) do
         joker_name = tostring(joker_name)
         joker_name = string.sub(joker_name, 3):lower()
-        local search_text = tostring(config.key):lower()
         if search_text == "" then
-            display_text = "Enter a joker to search for!"
+            show_info(text_ui_box, "s_found_no_match")
+            return
         elseif search_text == joker_name then
             config.set_key = "j_" .. joker_name
-            text_ui_box.config.object:remove()
-            --text_ui_box = {}
-            localize { type = "descriptions", set = "CallMeText", key = "s_found_exact_match", vars = { joker_name, config.jokers[config.set_key] },
-                nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
-            text_ui_box.config.object = UIBox({
-                definition = info_func(text_ui_box.config.object),
-                config = { parent = text_ui_box, type = "cm" },
-            })
-            text_ui_box.UIBox:recalculate()
+            show_info(text_ui_box, "s_found_exact_match", { joker_name, config.jokers[config.set_key] })
             return
         elseif joker_name:find(search_text) then
             table.insert(the_joker_names, joker_name)
@@ -106,38 +88,18 @@ function G.FUNCS.search_joker(e)
     end
     if #the_joker_names == 0 then
         config.set_key = ""
-        text_ui_box.config.object:remove()
-        localize { type = "descriptions", set = "CallMeText", key = "s_found_no_match", vars = {},
-            nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
-        text_ui_box.config.object = UIBox({
-            definition = info_func(text_ui_box.config.object),
-            config = { parent = text_ui_box, type = "cm" },
-        })
+        show_info(text_ui_box, "s_found_no_match")
     elseif #the_joker_names == 1 then
         config.set_key = "j_" .. the_joker_names[1]
-        text_ui_box.config.object:remove()
-        localize { type = "descriptions", set = "CallMeText", key = "s_found_one_match", vars = { config.set_key, config.jokers[config.set_key] },
-            nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
-        text_ui_box.config.object = UIBox({
-            definition = info_func(text_ui_box.config.object),
-            config = { parent = text_ui_box, type = "cm" },
-        })
+        show_info(text_ui_box, "s_found_one_match", { config.set_key, config.jokers[config.set_key] })
     else
         config.set_key = ""
         local names = table.concat(the_joker_names, ", ")
         if #names > 50 then
             names = names:sub(1, 50) .. "..."
         end
-
-        text_ui_box.config.object:remove()
-        localize { type = "descriptions", set = "CallMeText", key = "s_found_many", vars = { #the_joker_names, names },
-            nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
-        text_ui_box.config.object = UIBox({
-            definition = info_func(text_ui_box.config.object),
-            config = { parent = text_ui_box, type = "cm" },
-        })
+        show_info(text_ui_box, "s_found_many", { #the_joker_names, names })
     end
-    text_ui_box.UIBox:recalculate()
 end
 
 SMODS.current_mod.config_tab = function()
