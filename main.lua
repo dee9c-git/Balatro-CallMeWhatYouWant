@@ -4,9 +4,6 @@ config.key = ""
 config.set_key = ""
 config.val = ""
 
-local info_node = {}
-
-
 local function info_func(nodes)
     return {
         n = G.UIT.ROOT,
@@ -17,6 +14,17 @@ local function info_func(nodes)
     }
 end
 
+local function build_info_box(key, vars, parent)
+    local nodes = {}
+    localize { type = "descriptions", set = "CallMeText", key = key, vars = vars or {},
+        nodes = nodes, scale = 1.5, text_colour = G.C.WHITE }
+    local config = { type = "cm" }
+    if parent then
+        config.parent = parent
+    end
+    return UIBox({ definition = info_func(nodes), config = config })
+end
+
 local function get_text_ui_box(e)
     local main_col = e.parent.parent.parent.parent
     return main_col.children[2].children[1]
@@ -24,12 +32,7 @@ end
 
 local function show_info(text_ui_box, key, vars)
     text_ui_box.config.object:remove()
-    localize { type = "descriptions", set = "CallMeText", key = key, vars = vars or {},
-        nodes = text_ui_box.config.object, scale = 1.5, text_colour = G.C.WHITE }
-    text_ui_box.config.object = UIBox({
-        definition = info_func(text_ui_box.config.object),
-        config = { parent = text_ui_box, type = "cm" },
-    })
+    text_ui_box.config.object = build_info_box(key, vars, text_ui_box)
     text_ui_box.UIBox:recalculate()
 end
 
@@ -103,14 +106,8 @@ function G.FUNCS.search_joker(e)
 end
 
 SMODS.current_mod.config_tab = function()
-    localize { type = "descriptions", set = "CallMeText", key = "start", vars = {},
-        nodes = info_node, scale = 1.5, text_colour = G.C.WHITE }
-    local info = UIBox({
-        definition = info_func(info_node),
-        config = { type = "cm" },
-    })
-
-    local info_super_node = { n = G.UIT.O, config = { object = info } }
+    local info_box = build_info_box("start")
+    local info_box_node = { n = G.UIT.O, config = { object = info_box } }
     return {
         n = G.UIT.ROOT,
         config = { align = "cm", padding = 0.1, colour = G.C.BLACK, minw = 16, minh = 6 },
@@ -151,7 +148,7 @@ SMODS.current_mod.config_tab = function()
                     {
                         n = G.UIT.R,
                         config = { align = "cm", minw = 16, minh = 2, padding = 0.15 },
-                        nodes = { info_super_node }
+                        nodes = { info_box_node }
                     },
                     {
                         n = G.UIT.R,
