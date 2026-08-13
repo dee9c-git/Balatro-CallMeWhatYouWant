@@ -1,0 +1,31 @@
+<div align="center">
+
+# CallMeWhatYouWant
+#### Simple mod to rename your jokers.
+<img alt="banner" height="250" src="/assets/Banner.png" />
+</div>
+
+## Features
+- Rename jokers c:
+- Made for Vanilla Balatro
+
+It probably doesn't support other languages than en-US for now tho.
+
+## Install
+1. Go to [Balatro Mod Manager](https://github.com/skyline69/balatro-mod-manager) and install it.
+2. Install Steamodded using the mod manager.
+3. For now, get CallMeWhatYouWant by [clicking here](https://github.com/dee9c-git/Balatro-CallMeWhatYouWant/archive/refs/heads/master.zip) and unzip. (Same as clicking the green Code button, and then installing the zip)
+4. In the mod manager, go to Settings > Open Mods Folder and put CallMeWhatYouWant in there.
+
+## How to use
+Say you want to rename "Blueprint" to "The GOAT".
+1. Search for "Blueprint" by typing keywords and pressing "Search". We can type a more vague name like "blue" to find it. 
+2. If more than one joker is found, use the stricter/exact name that appears. (Some jokers like 'Joker' NEED the exact name) Continue until you see "Ready!"
+3. Type in the new name (The GOAT) and press the "Change".
+4. Restart Balatro to see the name.
+
+You can update as many jokers as you want, they will be displayed the next time you open Balatro.
+
+## Contributing
+Open an issue if you have some suggestions!
+
