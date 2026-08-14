@@ -12,10 +12,9 @@
 It probably doesn't support other languages than en-US for now tho.
 
 ## Install
-1. Go to [Balatro Mod Manager](https://github.com/skyline69/balatro-mod-manager) and install it.
+1. Install the [Balatro Mod Manager](https://github.com/skyline69/balatro-mod-manager)
 2. Install Steamodded using the mod manager.
-3. For now, get CallMeWhatYouWant by [clicking here](https://github.com/dee9c-git/Balatro-CallMeWhatYouWant/archive/refs/heads/master.zip) and unzip. (Same as clicking the green Code button, and then installing the zip)
-4. In the mod manager, go to Settings > Open Mods Folder and put CallMeWhatYouWant in there.
+3. Search for "CallMeWhatYouWant" in the mod manager and install the mod!
 
 ## How to use
 Say you want to rename "Blueprint" to "The GOAT".
