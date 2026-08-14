@@ -94,7 +94,7 @@ function G.FUNCS.search_joker(e)
         show_info(text_ui_box, "s_found_no_match")
     elseif #the_joker_names == 1 then
         config.set_key = "j_" .. the_joker_names[1]
-        show_info(text_ui_box, "s_found_one_match", { config.set_key, config.jokers[config.set_key] })
+        show_info(text_ui_box, "s_found_one_match", { the_joker_names[1], config.jokers[config.set_key] })
     else
         config.set_key = ""
         local names = table.concat(the_joker_names, ", ")
