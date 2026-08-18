@@ -25,6 +25,12 @@ return {
                     "No matches found!"
                 }
             },
+            mod_joker_count = {
+                name = "mod_joker_count",
+                text = {
+                    "{C:chips}#1#{} jokers have cool names now!"
+                }
+            },
             start = {
                 name = "start",
                 text = {
