@@ -40,13 +40,13 @@ return {
             success = {
                 name = "Success",
                 text = {
-                    "{C:money}Success!{} Restart to see changes."
+                    "{C:money}Success!{}"
                 }
             },
             reset_all = {
                 name = "Reset all",
                 text = {
-                    "Reset Done! Restart to see changes."
+                    "Reset Done!"
                 }
             }
         }
