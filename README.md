@@ -11,10 +11,14 @@
 
 It probably doesn't support other languages than en-US for now tho.
 
-## Install
-1. Install the [Balatro Mod Manager](https://github.com/skyline69/balatro-mod-manager)
+## Install with Mod Manager
+1. Install a mod manager: [imm](https://codeberg.org/frostice482/balatro-imm) / [r2modman](https://github.com/ebkr/r2modmanPlus) / [balatui](https://github.com/dee9c-git/balatui) etc.
 2. Install Steamodded using the mod manager.
 3. Search for "CallMeWhatYouWant" in the mod manager and install the mod!
+
+## Manual Install
+1. Download the latest release from [here](https://github.com/dee9c-git/Balatro-FoolsDisplay/archive/refs/heads/master.zip), or the green "Code" button > "Download ZIP".
+2. Extract the zip to your mods folder, and the install is done! If you don't know where your mod folder is, [check here](https://codeberg.org/frostice482/balatro-imm/src/branch/master/doc/manual_install.md)
 
 ## How to use
 Say you want to rename "Blueprint" to "The GOAT".
